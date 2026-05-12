@@ -1,4 +1,4 @@
-name: pr guard
+name: PR Guard
 
 on:
   pull_request:
