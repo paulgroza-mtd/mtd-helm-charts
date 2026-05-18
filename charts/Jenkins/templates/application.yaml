@@ -14,6 +14,37 @@ spec:
       values: |
         controller:
           serviceType: ClusterIP
+          additionalExistingSecrets:
+            - name: shared-library-pat
+              keyName: username
+            - name: shared-library-pat
+              keyName: password
+          JCasC:
+            defaultConfig: true
+            configScripts:
+              shared-library-credentials: |
+                credentials:
+                  system:
+                    domainCredentials:
+                      - credentials:
+                          - usernamePassword:
+                              scope: GLOBAL
+                              id: {{ .Values.library.credentialsId }}
+                              username: ${shared-library-pat-username}
+                              password: ${shared-library-pat-username}
+              shared-library: |
+                unclassified:
+                  globalLibraries:
+                    libraries:
+                      - name: {{ .Values.library.name }}
+                        defaultVersion: {{ .Values.library.defaultVersion }}
+                        implicit: {{ .Values.library.implicit }}
+                        retriever:
+                          modernSCM:
+                            scm:
+                              git:
+                                remote: {{ .Values.library.repoURL }}
+                                credentialsId: {{ .Values.library.credentialsId }}
   destination:
     server: {{ .Values.destination.server }}
     namespace: {{ .Values.destination.namespace }}
