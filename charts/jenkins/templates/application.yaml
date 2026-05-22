@@ -34,6 +34,29 @@ spec:
                               git:
                                 remote: {{ .Values.library.repoURL }}
                                 credentialsId: {{ .Values.library.credentialsId }}
+              seed-job: |
+                jobs:
+                  - script: >
+                      pipelineJob('seed-job') {
+                        triggers {
+                          cron('H/15 * * * *')
+                        }
+                        definition {
+                          cpsScm {
+                            scm {
+                              git {
+                                remote {
+                                  url('{{ .Values.library.repoURL }}')
+                                  credentials('{{ .Values.library.credentialsId }}')
+                                }
+                                branch('*/{{ .Values.library.defaultVersion }}')
+                              }
+                            }
+                            scriptPath('Jenkinsfile')
+                            lightweight(true)
+                          }
+                        }
+                      }
   destination:
     server: {{ .Values.destination.server }}
     namespace: {{ .Values.destination.namespace }}
